@@ -1,6 +1,6 @@
-# backend/db.py
+
 from app import create_app, db
-from models.jobs import Job      # ← add this line so SQLAlchemy “sees” the model
+from models.jobs import Job      
 
 app = create_app()
 
