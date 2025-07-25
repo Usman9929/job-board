@@ -10,7 +10,6 @@ This is a full-stack job board application that includes:
 ---
 
 ## 📁 Project Structure
-
 job-board/
 │
 ├── backend/ # Flask REST API
@@ -165,7 +164,10 @@ Communication Video
 
     Challenges and solutions
 
-    ➡️ Find the video on Google Drive. https://drive.google.com/file/d/1ha_7iOwPqkNi5wd7NU4g-ojtGtoxih5S/view?usp=sharing
+
+
+➡️ Find the video on Google Drive.
+https://drive.google.com/file/d/1ha_7iOwPqkNi5wd7NU4g-ojtGtoxih5S/view?usp=sharing
 
 
 
