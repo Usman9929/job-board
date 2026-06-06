@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { FiTrash2 } from 'react-icons/fi';
-import { FaSpinner } from 'react-icons/fa';
+import { FiTrash2, FiAlertTriangle, FiX } from 'react-icons/fi';
 
 const DeleteJob = ({ jobId, onDelete }) => {
   const [isDeleting, setIsDeleting] = useState(false);
@@ -29,38 +28,58 @@ const DeleteJob = ({ jobId, onDelete }) => {
 
   return (
     <div className="delete-container">
-      {showConfirm ? (
-        <div className="delete-confirmation">
-          <span>Are you sure?</span>
-          <button 
-            onClick={handleCancel}
-            className="cancel-button"
-          >
-            Cancel
-          </button>
-          <button 
-            onClick={handleDelete}
-            className="danger"
-            disabled={isDeleting}
-          >
-            {isDeleting ? (
-              <>
-                <FaSpinner className="spinner" /> Deleting...
-              </>
-            ) : (
-              <>
-                <FiTrash2 /> Confirm
-              </>
-            )}
-          </button>
-        </div>
-      ) : (
-        <button 
+      {!showConfirm ? (
+        <button
           onClick={handleDelete}
           className="danger icon-button"
+          title="Delete this job listing"
         >
-          <FiTrash2 /> Delete
+          <FiTrash2 />
+          Delete
         </button>
+      ) : (
+        <>
+          <div className="delete-modal-overlay" onClick={handleCancel}>
+            <div className="delete-modal" onClick={e => e.stopPropagation()}>
+              <div className="delete-modal-header">
+                <div className="delete-modal-icon">
+                  <FiAlertTriangle />
+                </div>
+                <div className="delete-modal-content">
+                  <h3>Delete Job Listing?</h3>
+                  <p>This action cannot be undone. The job listing and all associated data will be permanently deleted.</p>
+                </div>
+              </div>
+              <div className="delete-modal-actions">
+                <button
+                  onClick={handleCancel}
+                  className="secondary"
+                  disabled={isDeleting}
+                >
+                  <FiX />
+                  Cancel
+                </button>
+                <button
+                  onClick={handleDelete}
+                  className="danger"
+                  disabled={isDeleting}
+                >
+                  {isDeleting ? (
+                    <>
+                      <div style={{ display: 'inline-block', width: '14px', height: '14px', border: '2px solid currentColor', borderRadius: '50%', borderTopColor: 'transparent', animation: 'spin 0.6s linear infinite' }} />
+                      Deleting...
+                    </>
+                  ) : (
+                    <>
+                      <FiTrash2 />
+                      Delete
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
       )}
     </div>
   );

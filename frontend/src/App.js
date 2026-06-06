@@ -1,12 +1,11 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { FiMapPin, FiClock, FiEdit2 } from 'react-icons/fi'; // Added missing icon imports
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { FiMapPin, FiClock, FiEdit2 } from 'react-icons/fi';
 import { getJobs, createJob, updateJob, deleteJob } from './api';
 import AddEditJob from './Components/AddEditjob';
 import DeleteJob from './Components/Deletejob';
 import FilterSortJob from './Components/FilterSortjob';
 import './App.css';
 
-// Added formatDate utility function
 const formatDate = (dateString) => {
   const options = { year: 'numeric', month: 'short', day: 'numeric' };
   return new Date(dateString).toLocaleDateString(undefined, options);
@@ -23,6 +22,7 @@ function App() {
   const [sort, setSort] = useState('posting_date_desc');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const formRef = useRef(null);
 
   const fetchAllJobs = useCallback(async () => {
     setIsLoading(true);
@@ -41,6 +41,13 @@ function App() {
   useEffect(() => {
     fetchAllJobs();
   }, [fetchAllJobs]);
+
+  // Scroll to form when editing
+  useEffect(() => {
+    if (editingJob && formRef.current) {
+      formRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [editingJob]);
 
   const handleSubmit = async (jobData) => {
     try {
@@ -82,11 +89,13 @@ function App() {
         </div>
       )}
 
-      <AddEditJob 
-        onSubmit={handleSubmit} 
-        editingJob={editingJob} 
-        onCancel={handleCancelEdit}
-      />
+      <div ref={formRef}>
+        <AddEditJob 
+          onSubmit={handleSubmit} 
+          editingJob={editingJob} 
+          onCancel={handleCancelEdit}
+        />
+      </div>
       
       <FilterSortJob 
         filters={filters} 
@@ -103,17 +112,25 @@ function App() {
       ) : jobs.length === 0 ? (
         <div className="no-jobs">
           <p>No jobs found matching your criteria.</p>
-          <button onClick={fetchAllJobs}>Reset Filters</button>
+          <button onClick={() => {
+            setFilters({ search: '', job_type: '', location: '' });
+            setSort('posting_date_desc');
+          }} className="primary">
+            Reset Filters
+          </button>
         </div>
       ) : (
         <div className="job-list">
           {jobs.map(job => (
             <div key={job.id} className="job-card">
               <div className="job-header">
-                <h3>{job.title}</h3>
+                <div className="job-header-content">
+                  <h3>{job.title}</h3>
+                  <p className="company">{job.company}</p>
+                </div>
                 <span className="job-type">{job.job_type}</span>
               </div>
-              <p className="company">{job.company}</p>
+
               <div className="meta">
                 <span>
                   <FiMapPin /> {job.location}
@@ -122,6 +139,7 @@ function App() {
                   <FiClock /> Posted {formatDate(job.posting_date)}
                 </span>
               </div>
+
               {job.tags && job.tags.length > 0 && (
                 <div className="tags">
                   {job.tags.map(tag => (
@@ -129,10 +147,11 @@ function App() {
                   ))}
                 </div>
               )}
+
               <div className="job-actions">
                 <button 
                   onClick={() => setEditingJob(job)}
-                  className="edit-button"
+                  className="edit-button icon-button"
                 >
                   <FiEdit2 /> Edit
                 </button>

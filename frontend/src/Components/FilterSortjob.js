@@ -10,12 +10,10 @@ const FilterSortJob = ({ filters, setFilters, sort, setSort }) => {
       try {
         const res = await axios.get("http://127.0.0.1:5000/jobs");
         const jobs = res.data;
-
-        // Extract unique locations
         const uniqueLocations = [...new Set(jobs.map(job => job.location).filter(Boolean))];
         setLocations(uniqueLocations);
       } catch (err) {
-        console.error("❌ Failed to fetch job locations:", err);
+        console.error("Failed to fetch job locations:", err);
       }
     };
 
@@ -35,15 +33,19 @@ const FilterSortJob = ({ filters, setFilters, sort, setSort }) => {
     setSort('posting_date_desc');
   };
 
+  const isFiltersActive = filters.search || filters.job_type || filters.location || sort !== 'posting_date_desc';
+
   return (
     <div className="filter-container">
       <div className="filter-header">
-        <FiFilter className="filter-icon" />
-        <h3>Filter & Sort Jobs</h3>
+        <h3>
+          <FiFilter className="filter-icon" />
+          Filter & Sort Jobs
+        </h3>
         <button
           onClick={clearFilters}
           className="clear-filters"
-          disabled={!filters.search && !filters.job_type && !filters.location && sort === 'posting_date_desc'}
+          disabled={!isFiltersActive}
         >
           Clear All
         </button>
@@ -52,26 +54,29 @@ const FilterSortJob = ({ filters, setFilters, sort, setSort }) => {
       <div className="filter-grid">
         <div className="filter-group">
           <label htmlFor="search">
-            <FiSearch className="input-icon" /> Search
+            <FiSearch className="input-icon" />
+            Search
           </label>
           <input
             id="search"
             name="search"
-            placeholder="Title, company, or keywords"
+            placeholder="Title, company, keywords..."
             value={filters.search}
             onChange={handleFilterChange}
           />
         </div>
 
         <div className="filter-group">
-          <label htmlFor="job_type">Job Type</label>
+          <label htmlFor="job_type">
+            Job Type
+          </label>
           <select
             id="job_type"
             name="job_type"
             value={filters.job_type}
             onChange={handleFilterChange}
           >
-            <option value="">All Job Types</option>
+            <option value="">All Types</option>
             <option value="Full-time">Full-time</option>
             <option value="Part-time">Part-time</option>
             <option value="Contract">Contract</option>
@@ -80,7 +85,9 @@ const FilterSortJob = ({ filters, setFilters, sort, setSort }) => {
         </div>
 
         <div className="filter-group">
-          <label htmlFor="location">Location</label>
+          <label htmlFor="location">
+            Location
+          </label>
           <select
             id="location"
             name="location"
@@ -98,7 +105,8 @@ const FilterSortJob = ({ filters, setFilters, sort, setSort }) => {
 
         <div className="filter-group">
           <label htmlFor="sort">
-            <FiCalendar className="input-icon" /> Sort By
+            <FiCalendar className="input-icon" />
+            Sort By
           </label>
           <select
             id="sort"
